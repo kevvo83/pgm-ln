@@ -40,15 +40,46 @@ function phenotypeFactor = constructSigmoidPhenotypeFactor(alleleWeights, geneCo
 
 phenotypeFactor = struct('var', [], 'card', [], 'val', []);
 
+numAlleles = length(alleleWeights{1});
+numGenes = length(alleleWeights);
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % INSERT YOUR CODE HERE
 % Note that computeSigmoid.m will be useful for this function.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
 
 % Fill in phenotypeFactor.var.  This should be a 1-D row vector.
+phenotypeFactor.var = [phenotypeVar geneCopyVarOneList' geneCopyVarTwoList'];
+
 % Fill in phenotypeFactor.card.  This should be a 1-D row vector.
+phenotypeFactor.card = [2 numAlleles numAlleles numAlleles numAlleles];
+
+assignments = IndexToAssignment(1:prod(phenotypeFactor.card), phenotypeFactor.card);
 
 phenotypeFactor.val = zeros(1, prod(phenotypeFactor.card));
 % Replace the zeros in phentoypeFactor.val with the correct values.
+for x = 1:length(assignments)
+  phenotype = assignments(x, 1);
+  gene_allele_combos = assignments(x, 2:columns(assignments));
+  
+  f = 0;
+  
+  copies1_or_alleles1 = gene_allele_combos(1:numAlleles); % instances of g1c1, g2c1 from Parent 1
+  copies2_or_alleles2 = gene_allele_combos(1+numAlleles:end); % instances of g1c2, g2c2 from Parent 2
+  
+  % Reference/inspiration for this for loop - https://github.com/KWMalik/pgm-class/blob/master/PGM_Programming_Assignment_2/constructSigmoidPhenotypeFactor.m
+  for j=1:numGenes
+    f = f + alleleWeights{j}(copies1_or_alleles1(j)) + alleleWeights{j}(copies2_or_alleles2(j));
+  endfor
+  
+  f = computeSigmoid(f);
+  
+  if phenotype == 1
+    phenotypeFactor.val(x) = f;
+  else
+    phenotypeFactor.val(x) = 1 - f;
+  endif
+  
+endfor
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

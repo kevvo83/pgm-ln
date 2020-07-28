@@ -8,6 +8,8 @@ function phenotypeFactor = phenotypeGivenCopiesFactor(alphaList, numAlleles, gen
 % alleleList{1}, allele assignment 2 maps to alleleList{2}, ....  For the
 % phenotypes, assignment 1 maps to having the physical trait, and
 % assignment 2 maps to not having the physical trait.
+phenotype_cardinality = 2; % based on above comment, phenotypes card is still 2
+
 
 % THE VARIABLE TO THE LEFT OF THE CONDITIONING BAR MUST BE THE FIRST
 % VARIABLE IN THE .var FIELD FOR GRADING PURPOSES
@@ -59,9 +61,27 @@ phenotypeFactor = struct('var', [], 'card', [], 'val', []);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
 
 % Fill in phenotypeFactor.var.  This should be a 1-D row vector.
-% Fill in phenotypeFactor.card.  This should be a 1-D row vector.
+phenotypeFactor.var = [phenotypeVar geneCopyVarOne geneCopyVarTwo];
 
-phenotypeFactor.val = zeros(1, prod(phenotypeFactor.card));
+% Fill in phenotypeFactor.card.  This should be a 1-D row vector.
+phenotypeFactor.card = [phenotype_cardinality numAlleles numAlleles];
+
+phenotypeFactor.val = [];
+
+% IMPORTANT NOTE:
+% UNLIKE the previous networks and examples - this decomstructure network models
+%   the relationship between Parent_1_Allele, Parent_2_Allele & Child Phenotype.
+% The previous Network modelled the relationship between Parent_1_Genotype (i.e. combo of 2 alleles),
+%   Parent_2_Genotype & Child Phenotype
+
 % Replace the zeros in phentoypeFactor.val with the correct values.
+for i = 1:rows(allelesToGenotypes)
+  for j = 1:columns(allelesToGenotypes)
+    genotype_id = allelesToGenotypes(i, j);
+    
+    phenotypeFactor.val = [phenotypeFactor.val alphaList(genotype_id) (1 - alphaList(genotype_id))];
+  endfor  
+endfor
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
