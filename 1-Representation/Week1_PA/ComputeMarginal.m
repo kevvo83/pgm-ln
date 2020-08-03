@@ -27,11 +27,24 @@ end
 % Remember to renormalize the entries of M!
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Get the inverse of the .var array - on which to sum-up over
+%   The V input parameter to the FactorMarginalization() function is the
+%   list of variables to sum over.
+%   Whereas the V input paramater to ComputeMarginal() is the variables in the
+%   marginal - so the variables to be summed over are the inverse of that.
+var_to_be_summed_over = [];
+for x = 1:length(F)
+  var_to_be_summed_over = union(F(x).var, var_to_be_summed_over);
+endfor
+
+% variable from FACTORS.INPUT(i).var to be summed over to compute marginal
+var_to_be_summed_over = setdiff(var_to_be_summed_over, V);
+
 M = struct('var', [], 'card', [], 'val', []); % Returns empty factor. Change this.
 
-F1 = ObserveEvidence(F, E);
-F2 = ComputeJointDistribution(F1);
-M = FactorMarginalization(F2, V);
+M = ObserveEvidence(F, E);
+M = ComputeJointDistribution(M);
+M = FactorMarginalization(M, var_to_be_summed_over);
 
 M.val = M.val / sum(M.val);
 
