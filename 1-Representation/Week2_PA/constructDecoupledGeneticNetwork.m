@@ -91,18 +91,17 @@ for i = 1:numPeople
   % IF the person has parents specified, then get the CPD of the person's 
   %   Genotype given his/her parents
   if any(parents_indices)
-    factorList(i) = genotypeGivenParentsGenotypesFactor(numAlleles, i, parents_indices(1), parents_indices(2));
     
     parent_1_id = parents_indices(1);
     parent_2_id = parents_indices(2);
     
     factorList(i) = childCopyGivenParentalsFactor(numAlleles, i, parent_1_id, parent_1_id + numPeople); % allele 1 CPD
-    factorList(i + numPeople) = childCopyGivenParentalsFactor(numAlleles, i, parent_2_id, parent_2_id + numPeople); % allele 2 CPD
+    factorList(i + numPeople) = childCopyGivenParentalsFactor(numAlleles, i + numPeople, parent_2_id, parent_2_id + numPeople); % allele 2 CPD
     factorList(i + numPeople * 2) = phenotypeGivenCopiesFactor(alphaList, numAlleles, i, i + numPeople, i + numPeople * 2); % phenotype CPD
   else
 
     factorList(i) = childCopyGivenFreqsFactor(alleleFreqs, i); % allele 1 CPD
-    factorList(i + numPeople) = childCopyGivenFreqsFactor(alleleFreqs, i); % allele 2 CPD
+    factorList(i + numPeople) = childCopyGivenFreqsFactor(alleleFreqs, i + numPeople); % allele 2 CPD
     factorList(i + numPeople * 2) = phenotypeGivenCopiesFactor(alphaList, numAlleles, i, i + numPeople, i + numPeople * 2); % phenotype CPD
   endif
   
